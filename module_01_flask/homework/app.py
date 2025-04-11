@@ -54,23 +54,22 @@ def get_time_future():
     return f"Точное время через час будет {current_time_after_hour}"
 
 
+# Чтение книги и подготовка списка слов при запуске приложения
+try:
+    with open("war_and_peace.txt", "r", encoding="utf-8") as file:
+        text = file.read()
+        words = text.split()  # Разбиваем текст на слова
+except FileNotFoundError:
+    words = []  # Если файл не найден, оставляем пустой список слов
+
 @app.route('/get_random_word')
 def get_random_word():
-    # Читаем содержимое файла с книгой
-    try:
-        with open("war_and_peace.txt", "r", encoding="utf-8") as file:
-            # Считываем текст и разбиваем на слова
-            text = file.read()
-            words = text.split()
-    except FileNotFoundError:
-        return "Файл war_and_peace.txt не найден."
-
-    # Выбираем случайное слово
     if words:
+        # Выбираем случайное слово из уже подготовленного списка
         random_word = random.choice(words)
         return f"Случайное слово из книги: {random_word}"
     else:
-        return "Файл пуст или не содержит слов."
+        return "Файл war_and_peace.txt не найден или пуст."
 
 
 @app.route('/counter')
