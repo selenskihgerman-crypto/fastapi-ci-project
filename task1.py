@@ -1,14 +1,10 @@
 import logging
 
-# Настройка логгера
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+logging.basicConfig(
+    filename="stderr.txt",
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s",
+    datefmt="%H:%M:%S"
+)
 
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%H:%M:%S')
-file_handler = logging.FileHandler('stderr.txt')
-file_handler.setFormatter(formatter)
-
-logger.addHandler(file_handler)
-
-# Пример использования логгера
-logger.info('Это информационное сообщение')
+logging.info("Hello, world!")  # Проверка: в stderr.txt появится строка с временем
