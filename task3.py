@@ -1,12 +1,22 @@
-import json
 import logging
+import json
+from datetime import datetime
 
 class JsonAdapter(logging.LoggerAdapter):
     def process(self, msg, kwargs):
-        message = json.dumps({"time": self.formatTime(logging.LogRecord("", 0, "", 0, msg, [], None)), 
-                               "level": logging.getLevelName(kwargs.get('level', logging.INFO)), 
-                               "message": msg})
-        return message, kwargs
+        record = {
+            "time": datetime.now().strftime("%H:%M:%S"),
+            "level": kwargs.get("levelname", self.logger.level),
+            "message": msg
+        }
+        kwargs["extra"] = {}
+        return json.dumps(record, ensure_ascii=False), kwargs
 
-logger = JsonAdapter(logging.getLogger(__name__))
-logger.info('Sample log message')
+logger = JsonAdapter(logging.getLogger(__name__), {})
+handler = logging.FileHandler("skillbox_json_messages.log")
+formatter = logging.Formatter('%(message)s')
+handler.setFormatter(formatter)
+logger.logger.addHandler(handler)
+logger.logger.setLevel(logging.INFO)
+
+logger.info('Тестовое сообщение с кавычками " и переносом\nстроки')
