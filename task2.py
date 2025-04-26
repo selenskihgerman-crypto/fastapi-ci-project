@@ -1,13 +1,23 @@
 import re
+from bisect import bisect_left
 
-def load_words(file_path):
-    with open(file_path, 'r') as f:
-        return set(word.strip().lower() for word in f if len(word.strip()) > 4)
+def load_words(path="/usr/share/dict/words"):
+    with open(path) as f:
+        words = [line.strip().lower() for line in f if len(line.strip()) > 4]
+    words.sort()
+    return words
 
-def is_strong_password(password, word_set):
-    words_in_password = re.findall(r'\b\w+\b', password.lower())
-    return not any(word in word_set for word in words_in_password)
+EN_WORDS = load_words()
 
-# Пример использования
-words = load_words('/usr/share/dict/words')
-print(is_strong_password("MySecurePassword", words))
+def contains_word(password, word_list):
+    password_lower = password.lower()
+    for i in range(len(password_lower)):
+        for j in range(i+5, len(password_lower)+1):
+            candidate = password_lower[i:j]
+            idx = bisect_left(word_list, candidate)
+            if idx < len(word_list) and word_list[idx] == candidate:
+                return True
+    return False
+
+def is_strong_password(password):
+    return not contains_word(password, EN_WORDS)
