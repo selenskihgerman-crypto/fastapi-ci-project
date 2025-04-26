@@ -1,28 +1,29 @@
 import json
-from collections import Counter
+from collections import Counter, defaultdict
 
-def analyze_logs(file_path):
-    with open(file_path, 'r') as f:
-        lines = f.readlines()
+levels = Counter()
+hours = Counter()
+critical_5_20 = 0
+dog_count = 0
+warning_words = Counter()
 
-    levels_count = Counter()
-    hour_count = Counter()
-    dog_count = 0
-    warning_words = []
-
-    for line in lines:
-        log = json.loads(line)
-        levels_count[log['level']] += 1
-        hour = log['time'][:2]
-        hour_count[hour] += 1
-        if 'dog' in log['message'].lower():
+with open("skillbox_json_messages.log") as f:
+    for line in f:
+        data = json.loads(line)
+        levels[data["level"]] += 1
+        hour = data["time"][:2]
+        hours[hour] += 1
+        if (data["level"] == "CRITICAL" and
+            "05:00:00" <= data["time"] <= "05:20:00"):
+            critical_5_20 += 1
+        if "dog" in data["message"].lower():
             dog_count += 1
-        if log['level'] == 'WARNING':
-            warning_words.extend(log['message'].split())
+        if data["level"] == "WARNING":
+            for word in data["message"].split():
+                warning_words[word.lower()] += 1
 
-    most_common_warning = Counter(warning_words).most_common(1)
-
-    return levels_count, hour_count.most_common(1), dog_count, most_common_warning
-
-# Пример использования
-results = analyze_logs('skillbox_json_messages.log')
+print("Messages per level:", levels)
+print("Most logs in hour:", hours.most_common(1))
+print("CRITICAL logs 05:00:00-05:20:00:", critical_5_20)
+print("Messages with 'dog':", dog_count)
+print("Most frequent WARNING word:", warning_words.most_common(1))
