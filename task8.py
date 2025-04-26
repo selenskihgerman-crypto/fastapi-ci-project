@@ -1,26 +1,21 @@
-from collections import defaultdict
+T9 = {
+    '2': 'abc', '3': 'def', '4': 'ghi', '5': 'jkl',
+    '6': 'mno', '7': 'pqrs', '8': 'tuv', '9': 'wxyz'
+}
 
-def my_t9(digit_sequence):
-    digit_to_char = {
-        '2': 'abc', '3': 'def', '4': 'ghi',
-        '5': 'jkl', '6': 'mno', '7': 'pqrs',
-        '8': 'tuv', '9': 'wxyz'
-    }
+def digits_to_pattern(digits):
+    return '^' + ''.join(f"[{T9[d]}]" for d in digits) + '$'
 
-    words = load_words('/usr/share/dict/words')
-    possible_words = set()
+import re
 
-    def backtrack(index, path):
-        if index == len(digit_sequence):
-            possible_words.add(''.join(path))
-            return
-        for char in digit_to_char.get(digit_sequence[index], ''):
-            path.append(char)
-            backtrack(index + 1, path)
-            path.pop()
+def my_t9(digits, word_file="/usr/share/dict/words"):
+    pattern = re.compile(digits_to_pattern(digits), re.IGNORECASE)
+    words = []
+    with open(word_file) as f:
+        for word in f:
+            word = word.strip()
+            if len(word) == len(digits) and pattern.match(word):
+                words.append(word.lower())
+    return words
 
-    backtrack(0, [])
-    return list(filter(lambda word: word in words, possible_words))
-
-# Пример использования
-print(my_t9("22736368"))
+# Пример: my_t9('22736368') -> ['basement']
