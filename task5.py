@@ -1,17 +1,18 @@
 import re
+from datetime import datetime
 
-def measure_time_from_logs(file_path):
-    times = []
+def parse_time(s):
+    # Ожидаемый формат: HH:MM:SS,mmm
+    return datetime.strptime(s, "%H:%M:%S,%f")
 
-    with open(file_path, 'r') as f:
-        for line in f:
-            if "Enter measure_me" in line:
-                start_time = float(re.search(r'(\d+\.\d+)', line).group(1))
-            elif "Leave measure_me" in line:
-                end_time = float(re.search(r'(\d+\.\d+)', line).group(1))
-                times.append(end_time - start_time)
+with open("measure_me.log") as f:
+    lines = [line for line in f if "Enter measure_me" in line or "Leave measure_me" in line]
 
-    return sum(times) / len(times) if times else 0
+times = []
+for i in range(0, len(lines), 2):
+    enter = re.search(r"(\d{2}:\d{2}:\d{2},\d{3})", lines[i]).group(1)
+    leave = re.search(r"(\d{2}:\d{2}:\d{2},\d{3})", lines[i+1]).group(1)
+    t1, t2 = parse_time(enter), parse_time(leave)
+    times.append((t2 - t1).total_seconds())
 
-# Пример использования
-average_time = measure_time_from_logs('logs.txt')  # Укажите свой файл лог
+print("Average execution time:", sum(times)/len(times), "seconds")
