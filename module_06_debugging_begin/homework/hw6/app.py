@@ -6,30 +6,27 @@
 список всех доступных страниц на сайте с возможностью перехода на них.
 """
 
-from flask import Flask
+from flask import Flask, render_template_string
 
 app = Flask(__name__)
 
+def get_routes():
+    return [str(rule) for rule in app.url_map.iter_rules()
+            if "GET" in rule.methods and not rule.arguments]
 
-@app.route('/dogs')
-def dogs():
-    return 'Страница с пёсиками'
+@app.errorhandler(404)
+def page_not_found(e):
+    links = "".join(f'<li><a href="{route}">{route}</a></li>' for route in get_routes())
+    return f"<h1>Страница не найдена</h1><ul>{links}</ul>", 404
 
-
-@app.route('/cats')
-def cats():
-    return 'Страница с котиками'
-
-
-@app.route('/cats/<int:cat_id>')
-def cat_page(cat_id: int):
-    return f'Страница с котиком {cat_id}'
-
-
-@app.route('/index')
+@app.route("/")
 def index():
-    return 'Главная страница'
+    return "Главная"
 
+@app.route("/about")
+def about():
+    return "О сайте"
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run()
+
