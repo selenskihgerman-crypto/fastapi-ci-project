@@ -8,51 +8,32 @@
 4. Сколько сообщений содержит слово dog.
 5. Какое слово чаще всего встречалось в сообщениях уровня WARNING.
 """
-from typing import Dict
+import json
+from collections import Counter, defaultdict
 
+levels = Counter()
+hours = Counter()
+critical_5_20 = 0
+dog_count = 0
+warning_words = Counter()
 
-def task1() -> Dict[str, int]:
-    """
-    1. Сколько было сообщений каждого уровня за сутки.
-    @return: словарь вида {уровень: количество}
-    """
-    pass
+with open("skillbox_json_messages.log") as f:
+    for line in f:
+        data = json.loads(line)
+        levels[data["level"]] += 1
+        hour = data["time"][:2]
+        hours[hour] += 1
+        if (data["level"] == "CRITICAL" and
+            "05:00:00" <= data["time"] <= "05:20:00"):
+            critical_5_20 += 1
+        if "dog" in data["message"].lower():
+            dog_count += 1
+        if data["level"] == "WARNING":
+            for word in data["message"].split():
+                warning_words[word.lower()] += 1
 
-
-def task2() -> int:
-    """
-    2. В какой час было больше всего логов.
-    @return: час
-    """
-    pass
-
-
-def task3() -> int:
-    """
-    3. Сколько логов уровня CRITICAL было в период с 05:00:00 по 05:20:00.
-    @return: количество логов
-    """
-    pass
-
-
-def task4() -> int:
-    """
-    4. Сколько сообщений содержат слово dog.
-    @return: количество сообщений
-    """
-    pass
-
-
-def task5() -> str:
-    """
-    5. Какое слово чаще всего встречалось в сообщениях уровня WARNING.
-    @return: слово
-    """
-    pass
-
-
-if __name__ == '__main__':
-    tasks = (task1, task2, task3, task4, task5)
-    for i, task_fun in enumerate(tasks, 1):
-        task_answer = task_fun()
-        print(f'{i}. {task_answer}')
+print("Messages per level:", levels)
+print("Most logs in hour:", hours.most_common(1))
+print("CRITICAL logs 05:00:00-05:20:00:", critical_5_20)
+print("Messages with 'dog':", dog_count)
+print("Most frequent WARNING word:", warning_words.most_common(1))
