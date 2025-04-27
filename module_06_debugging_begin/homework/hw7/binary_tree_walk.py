@@ -15,71 +15,37 @@ def restore_tree(path_to_log_file: str) -> BinaryTreeNode:
 
 Примечание: гарантируется, что все значения, хранящиеся в бинарном дереве уникальны
 """
-import itertools
-import logging
-import random
-from collections import deque
-from dataclasses import dataclass
-from typing import Optional
-
-logger = logging.getLogger("tree_walk")
-
-
-@dataclass
 class BinaryTreeNode:
-    val: int
-    left: Optional["BinaryTreeNode"] = None
-    right: Optional["BinaryTreeNode"] = None
+    def __init__(self, value):
+        self.value = value
+        self.left = None
+        self.right = None
 
-    def __repr__(self):
-        return f"<BinaryTreeNode[{self.val}]>"
-
-
-def walk(root: BinaryTreeNode):
-    queue = deque([root])
-
-    while queue:
-        node = queue.popleft()
-
-        logger.info(f"Visiting {node!r}")
-
-        if node.left:
-            logger.debug(
-                f"{node!r} left is not empty. Adding {node.left!r} to the queue"
-            )
-            queue.append(node.left)
-
-        if node.right:
-            logger.debug(
-                f"{node!r} right is not empty. Adding {node.right!r} to the queue"
-            )
-            queue.append(node.right)
-
-
-counter = itertools.count(random.randint(1, 10 ** 6))
-
-
-def get_tree(max_depth: int, level: int = 1) -> Optional[BinaryTreeNode]:
-    if max_depth == 0:
-        return None
-
-    node_left = get_tree(max_depth - 1, level=level + 1)
-    node_right = get_tree(max_depth - 1, level=level + 1)
-    node = BinaryTreeNode(val=next(counter), left=node_left, right=node_right)
-
-    return node
-
-
-def restore_tree(path_to_log_file: str) -> BinaryTreeNode:
-    pass
-
-
-if __name__ == "__main__":
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(levelname)s:%(message)s",
-        filename="walk_log_4.txt",
-    )
-
-    root = get_tree(7)
-    walk(root)
+def restore_tree(path):
+    nodes = {}
+    children = set()
+    with open(path) as f:
+        for line in f:
+            # Пример строки: "INFO 12:00:00 Visited node 1: left=2, right=3"
+            m = re.search(r"node (\d+): left=(\d+|None), right=(\d+|None)", line)
+            if m:
+                v, l, r = m.groups()
+                v = int(v)
+                if v not in nodes:
+                    nodes[v] = BinaryTreeNode(v)
+                node = nodes[v]
+                if l != "None":
+                    l = int(l)
+                    if l not in nodes:
+                        nodes[l] = BinaryTreeNode(l)
+                    node.left = nodes[l]
+                    children.add(l)
+                if r != "None":
+                    r = int(r)
+                    if r not in nodes:
+                        nodes[r] = BinaryTreeNode(r)
+                    node.right = nodes[r]
+                    children.add(r)
+    # Root is the node that is not a child
+    root_val = (set(nodes.keys()) - children).pop()
+    return nodes[root_val]
