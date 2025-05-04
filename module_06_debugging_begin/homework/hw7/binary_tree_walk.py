@@ -17,64 +17,67 @@ def restore_tree(path_to_log_file: str) -> BinaryTreeNode:
 """
 import re
 
+
 class BinaryTreeNode:
     def __init__(self, value):
         self.value = value
         self.left = None
         self.right = None
 
-def restore_tree_from_logs(log_files_paths):
-    nodes = {}       # {значение: объект узла}
-    children = set() # множество значений потомков
 
-    # Регулярное выражение для поиска узлов
+def restore_tree_from_logs(log_files_paths):
+    nodes = {}  # {значение: объект узла}
+    children = set()  # множество значений потомков
+
     node_pattern = re.compile(r'<BinaryTreeNode$$$(\d+)$$$>')
 
     for path in log_files_paths:
         with open(path, 'r') as file:
             for line in file:
-                # Ищем все узлы в строке
-                found_nodes = node_pattern.findall(line)
-
-                # Обработка добавления потомков
                 if 'Adding' in line:
-                    parts = line.strip().split('Adding')
-                    parent_match = node_pattern.search(parts[0])
-                    if parent_match:
-                        parent_value = int(parent_match.group(1))
-                        # Создаем узел, если еще не создан
-                        if parent_value not in nodes:
-                            nodes[parent_value] = BinaryTreeNode(parent_value)
+                    matches = node_pattern.findall(line)
+                    if len(matches) == 2:
+                        parent_val = int(matches[0])
+                        child_val = int(matches[1])
 
-                        for part in parts[1:]:
-                            child_match = node_pattern.search(part)
-                            if child_match:
-                                child_value = int(child_match.group(1))
-                                if child_value not in nodes:
-                                    nodes[child_value] = BinaryTreeNode(child_value)
-                                # Добавим значение потомка в множество
-                                children.add(child_value)
+                        # Создаём узлы если их нет
+                        if parent_val not in nodes:
+                            nodes[parent_val] = BinaryTreeNode(parent_val)
+                        if child_val not in nodes:
+                            nodes[child_val] = BinaryTreeNode(child_val)
+                        children.add(child_val)
 
-                                # Определим, левый или правый потомок
-                                # Для этого можно использовать порядок добавления или лог-файлы
-                                # Для простоты — добавим оба потомка без определения позиции
-                                # В реальной задаче нужно дополнительно учитывать позицию
-                                # Предположим, что порядок добавлений определяет левый/правый
-                                # Здесь для примера можно оставить так
-                                # Можно расширить, если есть такая информация
-                                # Но для простоты — связи позже установим вручную или по логам
+                        # Определяем, левый или правый потомок
+                        if 'left is not empty' in line:
+                            nodes[parent_val].left = nodes[child_val]
+                        elif 'right is not empty' in line:
+                            nodes[parent_val].right = nodes[child_val]
+                        # Если вдруг что-то ещё, просто пропускаем (у нас только left/right)
 
-    # После обработки всех логов найдем корень
+    # Находим корень
     all_nodes = set(nodes.keys())
-    # Узлы, которые являются потомками
-    # Объединим все потомки узлов
-    # Так как мы добавляем только потомков (их значения), то создаем множество
-    # из всех значений, которые встречались как потомки
-    # В данном случае используем множество children
     root_candidates = all_nodes - children
-
-    # Если корень есть, возвращаем его
     if not root_candidates:
         return None
     root_value = root_candidates.pop()
     return nodes[root_value]
+
+def print_tree_by_levels(root):
+    if not root:
+        print("Дерево пустое")
+        return
+    queue = [root]
+    while queue:
+        node = queue.pop(0)
+        print(f"Узел: {node.value}")
+        if node.left:
+            print(f"  Левый потомок: {node.left.value}")
+            queue.append(node.left)
+        if node.right:
+            print(f"  Правый потомок: {node.right.value}")
+            queue.append(node.right)
+
+
+log_files_paths = ["./walk_log_1.txt"]
+root = restore_tree_from_logs(log_files_paths)
+print_tree_by_levels(root)
