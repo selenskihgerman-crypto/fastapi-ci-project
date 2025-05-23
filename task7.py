@@ -57,3 +57,6 @@ def restore_tree(log_files):
     # Корень — это узел, не являющийся потомком
     root_value = (set(nodes.keys()) - children).pop()
     return nodes[root_value]
+
+tree_root = restore_tree(['walk_log_1.txt', 'walk_log_2.txt', 'walk_log_3.txt', 'walk_log_4.txt'])
+print(tree_root.value if tree_root else "Нет корня")
