@@ -1,0 +1,39 @@
+# 2. Перевод этого ini в dict-конфиг (Python словарь)
+
+LOGGING_CONFIG = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "simpleFormatter": {
+            "format": "%(levelname)s | %(name)s | %(asctime)s | %(lineno)d | %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S"
+        }
+    },
+    "handlers": {
+        "consoleHandler": {
+            "class": "logging.StreamHandler",
+            "level": "DEBUG",
+            "formatter": "simpleFormatter",
+            "stream": "ext://sys.stdout"  # так указывается sys.stdout
+        },
+        "fileHandler": {
+            "class": "logging.FileHandler",
+            "level": "INFO",
+            "formatter": "simpleFormatter",
+            "filename": "app.log",
+            "encoding": "utf-8",
+            "mode": "a"
+        }
+    },
+    "loggers": {
+        "app": {
+            "handlers": ["fileHandler"],
+            "level": "INFO",
+            "propagate": False
+        }
+    },
+    "root": {
+        "level": "DEBUG",
+        "handlers": ["consoleHandler"]
+    }
+}
