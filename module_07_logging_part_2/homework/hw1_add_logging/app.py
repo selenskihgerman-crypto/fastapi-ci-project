@@ -1,34 +1,23 @@
-import sys
-from utils import string_to_operator
+# Задача 1. Добавляем логирование
 
+import logging
+from utils import add, subtract
 
-def calc(args):
-    print("Arguments: ", args)
+logger = logging.getLogger("app")
 
-    num_1 = args[0]
-    operator = args[1]
-    num_2 = args[2]
-
+def main():
     try:
-        num_1 = float(num_1)
-    except ValueError as e:
-        print("Error while converting number 1")
-        print(e)
+        a = float(input("Введите первое число: "))
+        b = float(input("Введите второе число: "))
 
-    try:
-        num_2 = float(num_2)
-    except ValueError as e:
-        print("Error while converting number 2")
-        print(e)
+        result_add = add(a, b)
+        logger.info(f"Сложение: {a} + {b} = {result_add}")
 
-    operator_func = string_to_operator(operator)
+        result_sub = subtract(a, b)
+        logger.info(f"Вычитание: {a} - {b} = {result_sub}")
 
-    result = operator_func(num_1, num_2)
+    except Exception as e:
+        logger.error(f"Ошибка: {e}")
 
-    print("Result: ", result)
-    print(f"{num_1} {operator} {num_2} = {result}")
-
-
-if __name__ == '__main__':
-    # calc(sys.argv[1:])
-    calc('2+3')
+if __name__ == "__main__":
+    main()
