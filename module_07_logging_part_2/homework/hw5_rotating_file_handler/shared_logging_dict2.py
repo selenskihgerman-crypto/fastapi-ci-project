@@ -1,4 +1,4 @@
-# Задача 5. Ротация логов (TimedRotatingFileHandler для utils)
+# Задача 5. Ротация логов.
 
 'handlers': {
     # ...
