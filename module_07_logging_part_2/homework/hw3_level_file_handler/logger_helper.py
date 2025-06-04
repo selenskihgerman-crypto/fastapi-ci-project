@@ -1,12 +1,21 @@
+# Задача 3. Многоуровневый обработчик (debug/error в разные файлы)
+
 import logging
-import sys
 
+def configure_logging():
+    # ... (предыдущий код)
 
-class LevelFileHandler(logging.Handler):
-    ...
+    debug_handler = logging.FileHandler('calc_debug.log')
+    debug_handler.setLevel(logging.DEBUG)
+    debug_handler.setFormatter(formatter)
 
+    error_handler = logging.FileHandler('calc_error.log')
+    error_handler.setLevel(logging.ERROR)
+    error_handler.setFormatter(formatter)
 
-def get_logger(name):
-    ...
-    return logger
-
+    logger = logging.getLogger()
+    # Очищаем handlers, чтобы не было дублей:
+    logger.handlers.clear()
+    logger.addHandler(handler)  # stdout
+    logger.addHandler(debug_handler)
+    logger.addHandler(error_handler)
