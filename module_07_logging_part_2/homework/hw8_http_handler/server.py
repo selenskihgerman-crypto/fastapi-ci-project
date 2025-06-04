@@ -1,26 +1,18 @@
-import json
-from flask import Flask, request
+# Задача 8. Сборщик логов (Flask + HTTPHandler)
 
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
-
+logs = []
 
 @app.route('/log', methods=['POST'])
 def log():
-    """
-    Записываем полученные логи которые пришли к нам на сервер
-    return: текстовое сообщение об успешной записи, статус код успешной работы
-
-    """
-    ...
-
+    logs.append(dict(request.form))
+    return 'OK', 200
 
 @app.route('/logs', methods=['GET'])
-def logs():
-    """
-    Рендерим список полученных логов
-    return: список логов обернутый в тег HTML <pre></pre>
-    """
-    ...
+def get_logs():
+    return jsonify(logs)
 
-# TODO запустить сервер
+if __name__ == '__main__':
+    app.run(port=3000)
