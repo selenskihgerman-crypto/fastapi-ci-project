@@ -1,0 +1,4 @@
+/newyear_app/
+├── app.py          # Основной код приложения
+├── requirements.txt
+└── Dockerfile
