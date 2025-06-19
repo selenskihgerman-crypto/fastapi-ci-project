@@ -1,3 +1,5 @@
+# Задание 3.
+
 from threading import Semaphore, Thread, Event
 import time
 import sys
