@@ -1,3 +1,5 @@
+# Задание 4.
+
 import threading
 import time
 import requests
