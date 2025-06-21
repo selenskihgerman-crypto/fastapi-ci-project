@@ -1,0 +1,21 @@
+<!--Создадим шаблон для страницы книги:-->
+
+<!-- templates/book.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ book.title }}</title>
+</head>
+<body>
+    <h1>{{ book.title }}</h1>
+    <p>Автор: <a href="{{ url_for('get_author_books', author_name=book.author.name) }}">
+        {{ book.author.name }}
+    </a></p>
+    <p>Год издания: {{ book.year }}</p>
+    <p>Просмотров: {{ book.views }}</p>
+
+    <a href="{{ url_for('get_books') }}">Назад к списку книг</a>
+</body>
+</html>
+
+

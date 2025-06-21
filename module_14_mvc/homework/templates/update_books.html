@@ -1,0 +1,28 @@
+<!--Обновим шаблон списка книг (books.html), чтобы отображались счетчики просмотров:-->
+
+<!-- templates/books.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Список книг</title>
+</head>
+<body>
+    <h1>Список книг</h1>
+
+    <ul>
+    {% for book in books %}
+        <li>
+            <a href="{{ url_for('get_book', book_id=book.id) }}">
+                {{ book.title }} ({{ book.year }})
+            </a>
+            - Автор: <a href="{{ url_for('get_author_books', author_name=book.author.name) }}">
+                {{ book.author.name }}
+            </a>
+            - Просмотров: {{ book.views }}
+        </li>
+    {% endfor %}
+    </ul>
+
+    <a href="{{ url_for('get_books_form') }}">Добавить новую книгу</a>
+</body>
+</html>

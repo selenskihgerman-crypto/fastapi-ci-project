@@ -1,0 +1,27 @@
+<!-- templates/author_books.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Книги автора {{ author_name }}</title>
+</head>
+<body>
+    <h1>Книги автора {{ author_name }}</h1>
+
+    {% if books %}
+        <ul>
+        {% for book in books %}
+            <li>
+                <a href="{{ url_for('get_book', book_id=book.id) }}">
+                    {{ book.title }} ({{ book.year }})
+                </a>
+                - Просмотров: {{ book.views }}
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>У этого автора пока нет книг в каталоге.</p>
+    {% endif %}
+
+    <a href="{{ url_for('get_books') }}">Назад к списку книг</a>
+</body>
+</html>
