@@ -13,16 +13,16 @@ clock = pygame.time.Clock()
 
 # Загрузка изображений
 try:
-    starship = pygame.image.load('img/ship.png').convert_alpha()
+    starship = pygame.image.load('img/player_ship.png').convert_alpha()
     starship = pygame.transform.scale(starship, (60, 60))
 
-    enemy_img = pygame.image.load('img/enemy_ship.png').convert_alpha()
+    enemy_img = pygame.image.load('img/enemy.png').convert_alpha()
     enemy_img = pygame.transform.scale(enemy_img, (50, 50))
 
-    blue_laser = pygame.image.load('img/laser.png').convert_alpha()
+    blue_laser = pygame.image.load('img/blue_laser.png').convert_alpha()
     blue_laser = pygame.transform.scale(blue_laser, (20, 40))
 
-    red_laser = pygame.image.load('img/red_laser.png').convert_alpha()
+    red_laser = pygame.image.load('img/player_laser.png').convert_alpha()
     red_laser = pygame.transform.scale(red_laser, (20, 40))
 
     try:
@@ -34,7 +34,7 @@ try:
         print(f"Ошибка загрузки фона: {e}")
         background = None
 
-    explosion_img = pygame.image.load('img/explosion.png').convert_alpha()
+    explosion_img = pygame.image.load('img/explosion_sid.png').convert_alpha()
     explosion_img = pygame.transform.scale(explosion_img, (50, 50))
 
     # Система очков
