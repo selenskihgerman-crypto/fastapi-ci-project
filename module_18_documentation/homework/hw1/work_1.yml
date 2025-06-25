@@ -1,0 +1,110 @@
+# api/books/docs.yml
+swagger: "2.0"
+info:
+  description: "API для работы с книгами"
+  version: "1.0.0"
+  title: "Books API"
+paths:
+  /api/books/:
+    get:
+      tags: ["Books"]
+      summary: "Получить список всех книг"
+      responses:
+        200:
+          description: "Успешный запрос"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Book"
+    post:
+      tags: ["Books"]
+      summary: "Добавить новую книгу"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Объект книги"
+          required: true
+          schema:
+            $ref: "#/definitions/Book"
+      responses:
+        201:
+          description: "Книга успешно добавлена"
+          schema:
+            $ref: "#/definitions/Book"
+        400:
+          description: "Неверные данные книги"
+
+  /api/books/{id}:
+    get:
+      tags: ["Books"]
+      summary: "Получить книгу по ID"
+      parameters:
+        - in: "path"
+          name: "id"
+          required: true
+          type: "integer"
+          description: "ID книги"
+      responses:
+        200:
+          description: "Успешный запрос"
+          schema:
+            $ref: "#/definitions/Book"
+        404:
+          description: "Книга не найдена"
+    put:
+      tags: ["Books"]
+      summary: "Обновить книгу"
+      parameters:
+        - in: "path"
+          name: "id"
+          required: true
+          type: "integer"
+          description: "ID книги"
+        - in: "body"
+          name: "body"
+          description: "Обновленные данные книги"
+          required: true
+          schema:
+            $ref: "#/definitions/Book"
+      responses:
+        200:
+          description: "Книга успешно обновлена"
+          schema:
+            $ref: "#/definitions/Book"
+        404:
+          description: "Книга не найдена"
+    delete:
+      tags: ["Books"]
+      summary: "Удалить книгу"
+      parameters:
+        - in: "path"
+          name: "id"
+          required: true
+          type: "integer"
+          description: "ID книги"
+      responses:
+        204:
+          description: "Книга успешно удалена"
+        404:
+          description: "Книга не найдена"
+
+definitions:
+  Book:
+    type: "object"
+    required:
+      - "title"
+      - "author_id"
+    properties:
+      id:
+        type: "integer"
+        example: 1
+      title:
+        type: "string"
+        example: "Война и мир"
+      author_id:
+        type: "integer"
+        example: 1
+      published:
+        type: "string"
+        format: "date"
+        example: "1869-01-01"

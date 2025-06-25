@@ -1,41 +1,101 @@
-import operator
+# Реализация калькулятора
+
 from flask import Flask
 from flask_jsonrpc import JSONRPC
 
 app = Flask(__name__)
-jsonrpc = JSONRPC(app, '/api', enable_web_browsable_api=True)
+jsonrpc = JSONRPC(app, '/api/jsonrpc')
 
 
-@jsonrpc.method('calc.add')
-def add(a: float, b: float) -> float:
+@jsonrpc.method('Calculator.calculate')
+def calculate(operation: str, a: float, b: float) -> dict:
+    """Выполняет арифметические операции над двумя числами.
+
+    Args:
+        operation (str): Операция (add, subtract, multiply, divide)
+        a (float): Первое число
+        b (float): Второе число
+
+    Returns:
+        dict: Результат операции или сообщение об ошибке
+
+    Raises:
+        ValueError: При неверной операции или делении на ноль
     """
-    Пример запроса:
+    try:
+        if operation == 'add':
+            result = a + b
+        elif operation == 'subtract':
+            result = a - b
+        elif operation == 'multiply':
+            result = a * b
+        elif operation == 'divide':
+            if b == 0:
+                raise ValueError("Division by zero is not allowed")
+            result = a / b
+        else:
+            raise ValueError("Invalid operation")
 
-    $ curl -i -X POST -H "Content-Type: application/json; indent=4" \
-        -d '{
-            "jsonrpc": "2.0",
-            "method": "calc.add",
-            "params": {"a": 7.8, "b": 5.3},
-            "id": "1"
-        }' http://localhost:5000/api
+        return {
+            'result': result,
+            'operation': operation,
+            'numbers': [a, b]
+        }
+    except Exception as e:
+        return {
+            'error': str(e),
+            'code': -32602,
+            'message': 'Invalid parameters'
+        }, 400
 
-    Пример ответа:
 
-    HTTP/1.1 200 OK
-    Server: Werkzeug/2.2.2 Python/3.10.6
-    Date: Fri, 09 Dec 2022 19:00:09 GMT
-    Content-Type: application/json
-    Content-Length: 54
-    Connection: close
-
-    {
-      "id": "1",
-      "jsonrpc": "2.0",
-      "result": 13.1
-    }
-    """
-    return operator.add(a, b)
-
+# Документация для Swagger
+calculate.api_doc = {
+    "description": "Выполняет арифметические операции над двумя числами",
+    "params": {
+        "operation": {
+            "type": "string",
+            "enum": ["add", "subtract", "multiply", "divide"],
+            "description": "Арифметическая операция"
+        },
+        "a": {
+            "type": "number",
+            "description": "Первое число"
+        },
+        "b": {
+            "type": "number",
+            "description": "Второе число"
+        }
+    },
+    "returns": {
+        "description": "Результат операции",
+        "schema": {
+            "type": "object",
+            "properties": {
+                "result": {
+                    "type": "number",
+                    "description": "Результат вычисления"
+                },
+                "operation": {
+                    "type": "string",
+                    "description": "Выполненная операция"
+                },
+                "numbers": {
+                    "type": "array",
+                    "items": {"type": "number"},
+                    "description": "Исходные числа"
+                }
+            }
+        }
+    },
+    "errors": [
+        {
+            "code": -32602,
+            "message": "Invalid parameters",
+            "description": "Возникает при неверной операции или делении на ноль"
+        }
+    ]
+}
 
 if __name__ == '__main__':
-    app.run('0.0.0.0', debug=True)
+    app.run(debug=True)
