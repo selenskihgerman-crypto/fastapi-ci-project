@@ -1,0 +1,154 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "API для работы с авторами",
+    "version": "1.0.0",
+    "title": "Authors API"
+  },
+  "paths": {
+    "/api/authors/": {
+      "get": {
+        "tags": ["Authors"],
+        "summary": "Получить список всех авторов",
+        "responses": {
+          "200": {
+            "description": "Успешный запрос",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Author"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Authors"],
+        "summary": "Добавить нового автора",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Объект автора",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Author"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Автор успешно добавлен",
+            "schema": {
+              "$ref": "#/definitions/Author"
+            }
+          },
+          "400": {
+            "description": "Неверные данные автора"
+          }
+        }
+      }
+    },
+    "/api/authors/{id}": {
+      "get": {
+        "tags": ["Authors"],
+        "summary": "Получить автора по ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer",
+            "description": "ID автора"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешный запрос",
+            "schema": {
+              "$ref": "#/definitions/Author"
+            }
+          },
+          "404": {
+            "description": "Автор не найден"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Authors"],
+        "summary": "Обновить автора",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer",
+            "description": "ID автора"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Обновленные данные автора",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Author"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Автор успешно обновлен",
+            "schema": {
+              "$ref": "#/definitions/Author"
+            }
+          },
+          "404": {
+            "description": "Автор не найден"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Authors"],
+        "summary": "Удалить автора",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer",
+            "description": "ID автора"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Автор успешно удален"
+          },
+          "404": {
+            "description": "Автор не найден"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Author": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "example": 1
+        },
+        "name": {
+          "type": "string",
+          "example": "Лев Толстой"
+        },
+        "birth_date": {
+          "type": "string",
+          "format": "date",
+          "example": "1828-09-09"
+        }
+      }
+    }
+  }
+}
