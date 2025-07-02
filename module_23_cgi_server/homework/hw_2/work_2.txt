@@ -1,0 +1,22 @@
+# /etc/nginx/sites-available/wsgi_app
+server {
+    listen 80;
+    server_name your_domain.com;
+
+    location / {
+        include uwsgi_params;
+        uwsgi_pass unix:/tmp/wsgi_app.sock;
+    }
+
+    location /static/ {
+        alias /path/to/your/static/files/;
+        expires 30d;
+        access_log off;
+    }
+
+    location /images/ {
+        alias /path/to/your/images/;
+        expires 30d;
+        access_log off;
+    }
+}
