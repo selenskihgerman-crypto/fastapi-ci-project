@@ -1,22 +1,30 @@
-# /etc/nginx/sites-available/wsgi_app
+# 2. nginx_config.conf (Задание 2 - Nginx + статика)
+
 server {
     listen 80;
-    server_name your_domain.com;
-
-    location / {
-        include uwsgi_params;
-        uwsgi_pass unix:/tmp/wsgi_app.sock;
-    }
+    server_name localhost;
+    root /var/www/html;
 
     location /static/ {
-        alias /path/to/your/static/files/;
-        expires 30d;
+        alias /var/www/static/;
+        expires 1y;
         access_log off;
+        types {
+            text/css css;
+            application/javascript js;
+            image/jpeg jpg jpeg;
+        }
     }
 
-    location /images/ {
-        alias /path/to/your/images/;
-        expires 30d;
-        access_log off;
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_read_timeout 300s;
+        proxy_connect_timeout 300s;
+        proxy_set_header Host $host;
+    }
+
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root /usr/share/nginx/html;
     }
 }
