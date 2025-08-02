@@ -1,48 +1,52 @@
-# routes.py
-import json
-import re
+# 1. wsgi_app.py (Задание 1 - WSGI-приложение)
 
-class WSGIApplication:
+import json
+import time
+from werkzeug.wrappers import Request, Response
+
+class WSGIApp:
     def __init__(self):
-        self.routes = {}
-        self.error_handlers = {}
+        self.routes = {
+            '/hello': self.handle_hello,
+            '/hello/<name>': self.handle_hello_name,
+            '/long_task': self.handle_long_task
+        }
 
     def route(self, path):
         def decorator(func):
-            # Преобразуем пути с параметрами в регулярные выражения
-            pattern = re.sub(r'<(\w+)>', r'(?P<\1>[^/]+)', path)
-            self.routes[(pattern, func.__name__)] = func
+            self.routes[path] = func
             return func
         return decorator
 
+    def handle_hello(self):
+        return json.dumps({"response": "Hello, world!"})
+
+    def handle_hello_name(self, name):
+        return json.dumps({"response": f"Hello, {name}!"})
+
+    def handle_long_task(self):
+        time.sleep(300)  # 5-минутная задержка
+        return json.dumps({"message": "We did it!"})
+
     def __call__(self, environ, start_response):
-        path = environ.get('PATH_INFO', '/')
-        method = environ.get('REQUEST_METHOD', 'GET')
+        request = Request(environ)
+        path = request.path
 
-        # Ищем подходящий маршрут
-        for route_pattern, handler in self.routes.items():
-            pattern, _ = route_pattern
-            match = re.fullmatch(pattern, path)
-            if match:
-                # Вызываем обработчик с параметрами из URL
-                response = handler(**match.groupdict())
-                status = '200 OK'
-                headers = [('Content-Type', 'application/json')]
-                start_response(status, headers)
-                return [response.encode('utf-8')]
+        # Динамические маршруты
+        if path.startswith('/hello/'):
+            name = path.split('/')[-1]
+            response = self.handle_hello_name(name)
+            start_response('200 OK', [('Content-Type', 'application/json')])
+            return [response.encode()]
 
-        # Если маршрут не найден - 404
-        status = '404 Not Found'
-        headers = [('Content-Type', 'application/json')]
-        start_response(status, headers)
-        return [json.dumps({"error": "Not Found"}).encode('utf-8')]
+        # Статические маршруты
+        if path in self.routes:
+            response = self.routes[path]()
+            start_response('200 OK', [('Content-Type', 'application/json')])
+            return [response.encode()]
 
-app = WSGIApplication()
+        # 404
+        start_response('404 Not Found', [('Content-Type', 'application/json')])
+        return [json.dumps({"error": "Not Found"}).encode()]
 
-@app.route("/hello")
-def say_hello():
-    return json.dumps({"response": "Hello, world!"}, indent=4)
-
-@app.route("/hello/<name>")
-def say_hello_with_name(name: str):
-    return json.dumps({"response": f"Hello, {name}!"}, indent=4)
+app = WSGIApp()
