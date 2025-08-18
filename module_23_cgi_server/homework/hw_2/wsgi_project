@@ -1,0 +1,18 @@
+# 2. Конфиг Nginx (config/nginx.conf)
+
+server {
+    listen 80;
+    server_name localhost;
+
+    location /static/ {
+        alias /home/german/PycharmProjects/module_23/wsgi_project/app/static/;
+        expires 1y;
+        access_log off;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_read_timeout 300s;
+    }
+}
