@@ -1,16 +1,26 @@
 import json
-import re
+import time
 
-class WSGIApplication:
+class WSGIApp:
     def __init__(self):
         self.routes = {}
-        self.error_handlers = {}
+        
+        @self.route("/hello")
+        def hello():
+            return json.dumps({"response": "Hello, world!"})
+            
+        @self.route("/hello/<name>")
+        def hello_name(name):
+            return json.dumps({"response": f"Hello, {name}!"})
+            
+        @self.route("/long_task")
+        def long_task():
+            time.sleep(300)
+            return json.dumps({"message": "We did it!"})
 
     def route(self, path):
         def decorator(func):
-            # Преобразуем пути с параметрами в регулярные выражения
-            pattern = re.sub(r'<(\w+)>', r'(?P<\1>[^/]+)', path)
-            self.routes[(pattern, func.__name__)] = func
+            self.routes[path] = func
             return func
         return decorator
 
