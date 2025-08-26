@@ -1,0 +1,13 @@
+Настройка Grafana
+
+Откройте Grafana в браузере: http://localhost:3000
+
+Логин/пароль по умолчанию: admin/admin
+
+Добавьте источник данных (Data Source):
+
+Тип: Prometheus
+
+URL: http://prometheus:9090
+
+Сохраните и протестируйте подключение

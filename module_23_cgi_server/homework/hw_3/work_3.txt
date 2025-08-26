@@ -1,18 +1,1 @@
-# 3. gunicorn.service (Задание 3 - Тайм-ауты)
 
-[Unit]
-Description=Gunicorn WSGI Server
-After=network.target
-
-[Service]
-User=user
-Group=www-data
-WorkingDirectory=/path/to/project
-Environment="PATH=/path/to/venv/bin"
-ExecStart=/path/to/venv/bin/gunicorn wsgi_app:app -b 127.0.0.1:8000 --workers 3 --timeout 300
-
-Restart=always
-RestartSec=5s
-
-[Install]
-WantedBy=multi-user.target
