@@ -1,0 +1,2 @@
+CREATE DATABASE skillbox_db;
+GRANT ALL PRIVILEGES ON DATABASE skillbox_db TO user;
