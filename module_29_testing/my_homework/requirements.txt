@@ -1,0 +1,5 @@
+flask==2.3.3
+flask-sqlalchemy==3.0.5
+pytest==7.4.2
+factory-boy==3.2.1
+faker==19.3.0
