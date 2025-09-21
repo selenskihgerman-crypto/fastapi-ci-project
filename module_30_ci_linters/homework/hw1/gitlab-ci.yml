@@ -1,0 +1,38 @@
+image: python:3.11
+
+stages:
+  - lint
+  - test
+
+cache:
+  paths:
+    - .cache/pip
+
+before_script:
+  - python -V
+  - pip install -r requirements.txt
+
+flake8:
+  stage: lint
+  script:
+    - flake8 app/ tests/ --max-line-length=88 --show-source
+
+isort:
+  stage: lint
+  script:
+    - isort app/ tests/ --check-only --diff
+
+black:
+  stage: lint
+  script:
+    - black app/ tests/ --check --diff
+
+mypy:
+  stage: lint
+  script:
+    - mypy app/ --ignore-missing-imports
+
+pytest:
+  stage: test
+  script:
+    - pytest tests/ -v
